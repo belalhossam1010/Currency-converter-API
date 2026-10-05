@@ -7,6 +7,7 @@ let display_value = document.querySelector(".displayvalue");
 let change = document.querySelector(".change");
 let fromCode = "AED";
 let toCode = "AED";
+let button = document.querySelector(".btn");
 
 const COUNTRY_NAMES = {
   AED: "United Arab Emirates Dirham",
@@ -187,19 +188,34 @@ tocurrency.addEventListener("change", (e) => {
   toCode = e.target.value;
 });
 //drop down end
-amount.addEventListener("keydown", (event) => {
-  if (amount.value.trim() === "") {
-    amount.value = 1;
+amount.addEventListener("blur", () => {
+  if (
+    amount.value.trim() === "" ||
+    isNaN(amount.value) ||
+    parseFloat(amount.value) <= 0
+  ) {
+    amount.value = "1";
   }
+});
+amount.addEventListener("focus", () => {
+  amount.select();
+});
+
+button.addEventListener("click", (event) => {
+  mainfunction();
+});
+
+amount.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
     mainfunction();
   }
 });
+
 change.addEventListener("click", () => {
   let temp = fromCode;
   fromCode = toCode;
-  toCode = temp2;
+  toCode = temp;
   fromcurrency.value = fromCode;
   tocurrency.value = toCode;
   updateFlag(tocurrency, toflag);
@@ -215,6 +231,13 @@ function checkinput() {
   }
 }
 function mainfunction() {
+  if (
+    amount.value.trim() === "" ||
+    parseFloat(amount.value) <= 0 ||
+    isNaN(amount.value)
+  ) {
+    amount.value = "1";
+  }
   if (checkinput()) {
     fetch(
       "https://v6.exchangerate-api.com/v6/e096e7e881944ab6c1277d9d/latest/USD",
